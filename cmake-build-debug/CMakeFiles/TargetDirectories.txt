@@ -1,0 +1,3 @@
+/home/daniel/Documents/3BITZ/IMS/IMS-Project/cmake-build-debug/CMakeFiles/IMS_Project.dir
+/home/daniel/Documents/3BITZ/IMS/IMS-Project/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/daniel/Documents/3BITZ/IMS/IMS-Project/cmake-build-debug/CMakeFiles/rebuild_cache.dir

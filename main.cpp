@@ -1,58 +1,64 @@
-
 ////////////////////////////////////////////////////////////////////////////
-// Model multiexp.cc              SIMLIB/C++
+// model2-timeout.cc              SIMLIB/C++
 //
-// Multiple experiments with various parameters
+// Ukázkový model s netrpělivými požadavky
 //
 
 #include "simlib.h"
 
-const double ENDTime = 2000;      // time of simulation
+const int TIMEOUT = 20;
+const int SERVICE = 10;
 
-Facility  Box("Box");
-Histogram Table("Table",0,25,20);
+// deklarace globálních objektů
+Facility  Box("Linka");
+Histogram Tabulka("Tabulka", 0, 1, SERVICE+TIMEOUT+1);
+long ncount = 0;
 
-class Customer : public Process {
-    double Prichod;                 // atribute of each customer
-    void Behavior() {               // --- behavoir specification ---
-        Prichod = Time;               // incoming time
-        Seize(Box);                   // start of service
-        Wait(10);                     // time of service
-        Release(Box);                 // end of service
-        Table(Time-Prichod);          // waiting and service time
-    }
+class Timeout : public Event {
+    Process *ptr;        // který proces
 public:
-    Customer() { Activate(); }
+    Timeout(double t, Process *p): ptr(p) {
+        Activate(Time+t);  // kdy vyprší timeout
+    }
+    void Behavior() {
+        ptr->Out();        // vyjmout z fronty
+        delete ptr;        // likvidace
+        ncount++;          // počitadlo
+        Cancel();          // konec události (SIMLIB BUG)
+    }
 };
 
-class Generator : public Event {  // model of system's input
-    double dt;
-    void Behavior() {               // --- behavior specification ---
-        new Customer;                    // new customer
-        Activate(Time+Exponential(dt));  //
+class Zakaznik : public Process { // třída zákazníků
+    double Prichod;                 // atribut každého zákazníka
+    void Behavior() {               // --- popis chování zákazníka ---
+        Prichod = Time;               // čas příchodu zákazníka
+        Event *timeout = new Timeout(TIMEOUT,this); // nastavit timeout
+        Seize(Box);                   // obsazení zařízení Box
+        delete timeout; // zrušit neaktivovaný timeout
+        Wait(SERVICE);                     // obsluha
+        Release(Box);                 // uvolnění
+        Tabulka(Time-Prichod);        // doba obsluhy a čekání
     }
-public:
-    Generator(double d) : dt(d) { Activate(); }
 };
 
-void Sample() {
-    if(Time>0) Print(" %g", Table.stat.MeanValue());
-}
-Sampler s(Sample,500);
-
-int main() {
-    SetOutput("multiexp.dat");    // output redirection
-    _Print("# MULTIEXP - multiple experiments example\n");
-    for(int i=1; i<=20; i++)  {
-        Print("# Experiment#%d (čas=%g) \n", i, ENDTime);
-        Init(0,ENDTime);            // time of simulation is 0..ENDTime
-        Box.Clear();                // initialization of all objects!
-        Table.Clear();
-        double interval = i;
-        new Generator(interval);    // customer generator
-        Print("%g ", interval);
-        Run();                      // simulation experiment
-        Print(" %g\n", Table.stat.MeanValue());
+class Generator : public Event {  // generátor zákazníků
+    void Behavior() {               // --- popis chování generátoru ---
+        (new Zakaznik)->Activate();   // nový zákazník, aktivace v čase Time
+        Activate(Time+Exponential(1e3/150));  // interval mezi příchody
     }
+};
+
+int main() {                 // popis experimentu s modelem
+//DebugON();
+    Print("model2-timeout -- příklad SIMLIB/C++\n");
+    SetOutput("model2-timeout.out");
+    Init(0,1000);              // inicializace experimentu, čas bude 0..1000
+    (new Generator)->Activate(); // generátor zákazníků, jeho aktivace
+    Run();                     // simulace
+    Print("Počet netrpělivých zákazníků: %d \n", ncount);
+    Box.Output();              // tisk výsledků
+    Tabulka.Output();
     return 0;
 }
+
+// konec
