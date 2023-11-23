@@ -4,7 +4,7 @@ LIBS = -lm -lsimlib
 
 SRCS = main.cpp
 OBJS = $(SRCS:.cpp=.o)
-EXEC = simulation
+EXEC = sim
 
 all: $(EXEC)
 
@@ -13,6 +13,9 @@ $(EXEC): $(OBJS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
+
+run: $(EXEC)
+	./$(EXEC)
 
 clean:
 	rm -f $(OBJS) $(EXEC)
