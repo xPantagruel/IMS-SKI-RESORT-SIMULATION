@@ -49,24 +49,23 @@ class Skier : public Process
 
     int jizdy = 10;
     lift current_lift;
+    double time_spent_skiing = 0;
+    double time_spent_other = 0;
 
     void choose_start()
     {
         double val = Random();
         if (val < 0.33)
         {
-            Print(val);
-            Print("Entered MARTA1");
+
             current_lift = MARTA1;
         }
         else if (val < 0.66)
         {
-            Print("Entered MARTA2");
             current_lift = MARTA2;
         }
         else
         {
-            Print("Entered KOTVA");
             current_lift = KOTVA;
         }
     }
@@ -158,18 +157,22 @@ class Skier : public Process
 
     void Behavior() override
     {
-        Print("Skier generated.\n");
-        Print(Time);
 
         choose_start();
         while (jizdy > 0 && open)
         {
+            double tmp = Time;
             ride_up();
+            time_spent_other += (Time - tmp);
+            tmp = Time;
             ride_down();
+            time_spent_skiing += (Time - tmp);
             jizdy--;
         }
-        Print("Skier leaving the system.\n");
-        Print(Time);
+        Print("Skier leaving the system. Time spent other: ");
+        Print("Skiing ration: ");
+        Print((time_spent_skiing/(time_spent_skiing+time_spent_other))*100);
+        Print("%\n");
     }
 };
 
@@ -183,10 +186,12 @@ class Generator : public Event
         if (!open)
         {
             Cancel();
+            Print("Total number of visitors.");
+            Print(skier_cnt);
+            Print("\n");
         }
         else
         {
-            Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
             Activate(Time + Exponential(15));
