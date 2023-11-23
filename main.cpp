@@ -1,4 +1,8 @@
 #include "simlib.h"
+#include <cmath>
+#include <vector>
+#include <utility>
+#include <algorithm>
 
 /// time to lift the skier uphill
 const int way_up_marta1 = 300;
@@ -18,6 +22,8 @@ enum lift
     MARTA2, // 1
     KOTVA   // 2
 };
+
+std::vector<std::pair<double, double>> skier_stats;
 
 bool lift_ready = false;
 bool ok = true;
@@ -51,6 +57,7 @@ class Skier : public Process
     lift current_lift;
     double time_spent_skiing = 0;
     double time_spent_other = 0;
+    double start_time;
 
     void choose_start()
     {
@@ -157,7 +164,7 @@ class Skier : public Process
 
     void Behavior() override
     {
-
+        start_time = Time;
         choose_start();
         while (jizdy > 0 && open)
         {
@@ -169,47 +176,84 @@ class Skier : public Process
             time_spent_skiing += (Time - tmp);
             jizdy--;
         }
-        Print("Skier leaving the system. Time spent other: ");
-        Print("Skiing ration: ");
-        Print((time_spent_skiing/(time_spent_skiing+time_spent_other))*100);
-        Print("%\n");
+        double skiing_ratio;
+        if(jizdy == 0){
+             skiing_ratio = time_spent_skiing/(time_spent_skiing+time_spent_other)*100;
+        }else{
+             skiing_ratio =0;
+        }
+
+        skier_stats.emplace_back(start_time, skiing_ratio);
     }
 };
-
+int skier_cnt = 0;
 class Generator : public Event
 {
-    int skier_cnt = 0;
+
     // todo night openning hours
     // todo day openning hours
+    int exp = 0;
+    int cnt = 0;
+
+    double get_interval(){
+        cnt++;
+        if(cnt < 100){ // first 100 visitors
+            return Exponential(1);
+        }else if(cnt < 1000){
+            return Exponential(5);
+        }
+        else if(cnt < 2000) {
+            return Exponential(20);
+        }else{
+            return Exponential(100);
+        }
+
+    }
+
     void Behavior() override
     {
         if (!open)
         {
             Cancel();
-            Print("Total number of visitors.");
-            Print(skier_cnt);
-            Print("\n");
         }
         else
         {
             (new Skier)->Activate();
             skier_cnt++;
-            Activate(Time + Exponential(15));
+            Print("Skier generated at ");
+            Print(Time);
+            Print("\n");
+            Activate(Time + get_interval());
         }
     }
 };
 
 int main(int argc, char *argv[])
 {
-
-    Print("Project IMS 2023");
+    Print("Project IMS 2023\n");
     Init(0, 40000);
     double day_time = 27000;
     (new Open_hours(day_time))->Activate();
     (new Generator)->Activate();
 
     Run();
-    Print("Simulation done.");
+    std::sort(skier_stats.begin(), skier_stats.end(),
+              [](const auto& lhs, const auto& rhs) {
+                  return lhs.first < rhs.first;
+              });
+    // Access and print the values in the vector
+    for (const auto& pair : skier_stats) {
+        Print("Start: ");
+        Print(pair.first);
+        Print(" Ratio: ");
+        Print(pair.second);
+        Print("%\n");
+    }
+
+    Print("Simulation done.\n");
+    Print("Total number of visitors.");
+    Print(skier_cnt);
+    Print("\n");
     Print("Marta 1");
     marta1.Output();
     Print("Marta 2");
