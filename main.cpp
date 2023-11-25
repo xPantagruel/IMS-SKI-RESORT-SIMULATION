@@ -1,5 +1,9 @@
 #include "simlib.h"
-#include <cstring>
+#include <cmath>
+#include <vector>
+#include <utility>
+#include <algorithm>
+#include <string.h>
 
 /// time to lift the skier uphill
 const int way_up_marta1 = 300;
@@ -19,6 +23,8 @@ enum lift
     MARTA2, // 1
     KOTVA   // 2
 };
+
+std::vector<std::pair<double, double>> skier_stats;
 
 bool lift_ready = false;
 bool ok = true;
@@ -50,24 +56,24 @@ class Skier : public Process
 
     int jizdy = 10;
     lift current_lift;
+    double time_spent_skiing = 0;
+    double time_spent_other = 0;
+    double start_time;
 
     void choose_start()
     {
         double val = Random();
         if (val < 0.33)
         {
-            Print(val);
-            Print("Entered MARTA1");
+
             current_lift = MARTA1;
         }
         else if (val < 0.66)
         {
-            Print("Entered MARTA2");
             current_lift = MARTA2;
         }
         else
         {
-            Print("Entered KOTVA");
             current_lift = KOTVA;
         }
     }
@@ -118,7 +124,7 @@ class Skier : public Process
         else
         { // vyjel do pulky pres marta 2
             double val = Random();
-            if (val < 0.5)
+            if (val < 0.7)
             {
                 Wait(108); // sjizdi marta 2
                 current_lift = MARTA2;
@@ -167,25 +173,35 @@ class Skier : public Process
 
     void Behavior() override
     {
-        Print("Skier generated.\n");
-        Print(Time);
-
+        start_time = Time;
         choose_start();
         while (jizdy > 0 && open)
         {
+            double tmp = Time;
             ride_up();
+            time_spent_other += (Time - tmp);
+            tmp = Time;
             ride_down();
+            time_spent_skiing += (Time - tmp);
             jizdy--;
         }
-        Print("Skier leaving the system.\n");
-        Print(Time);
+        double skiing_ratio;
+        if (jizdy == 0)
+        {
+            skiing_ratio = time_spent_skiing / (time_spent_skiing + time_spent_other) * 100;
+        }
+        else
+        {
+            skiing_ratio = 0;
+        }
+
+        skier_stats.emplace_back(start_time, skiing_ratio);
     }
 };
 
 class GeneratorDay : public Event
 {
     int skier_cnt = 0;
-    bool isMorning = true;
     double current_time = 0.0;
 
     void Behavior() override
@@ -204,37 +220,25 @@ class GeneratorDay : public Event
             (new Skier)->Activate();
             skier_cnt++;
 
-            if (current_time < 1800) // 8:30 - 9:00 ULTRA RUSH
-            {
-                Activate(Time + Exponential(6));
+            if (current_time < 10800)
+            {                                    // 8:30 - 11:00 (ULTRA RUSH)
+                Activate(Time + Exponential(8)); // Adjusted rate for ULTRA RUSH hours
             }
-            else if (current_time < 5400) // 9:00 - 10:00 HIGH RUSH
-            {
-                Activate(Time + Exponential(10));
+            else if (current_time < 13200)
+            {                                     // 11:00 - 12:00 (MEDIUM RUSH)
+                Activate(Time + Exponential(15)); // Adjusted rate for MEDIUM RUSH hours
             }
-            else if (current_time < 9000) // 10:00 - 11:00 HIGH RUSH
-            {
-                Activate(Time + Exponential(15));
+            else if (current_time < 18000)
+            {                                     // 12:00 - 13:00 (LOW RUSH)
+                Activate(Time + Exponential(20)); // Adjusted rate for LOW RUSH hours
             }
-            else if (current_time < 12600) // 11:00 - 12:00 MEDIUM RUSH
-            {
-                Activate(Time + Exponential(20));
+            else if (current_time < 21600)
+            {                                     // 13:00 - 15:00 (HIGH RUSH)
+                Activate(Time + Exponential(15)); // Adjusted rate for HIGH RUSH hours
             }
-            else if (current_time < 16200) // 12:00 - 13:00 LOW RUSH
-            {
-                Activate(Time + Exponential(25));
-            }
-            else if (current_time < 19800) // 13:00 - 14:00 ULTRA RUSH
-            {
-                Activate(Time + Exponential(20));
-            }
-            else if (current_time < 23400) // 14:00 - 15:00 HIGH RUSH
-            {
-                Activate(Time + Exponential(15));
-            }
-            else if (current_time < 27000) // 15:00 - 16:00 LOW RUSH
-            {
-                Activate(Time + Exponential(10));
+            else if (current_time < 27000)
+            {                                     // 15:00 - 16:00 (LOW RUSH)
+                Activate(Time + Exponential(10)); // Adjusted rate for LOW RUSH hours
             }
             else
             {
@@ -268,15 +272,15 @@ class GeneratorNight : public Event
             // 18:00 - 21:00
             if (current_time < 3600) // 18:00 - 19:00
             {
-                Activate(Time + Exponential(6)); // HIGH RUSH
+                Activate(Time + Exponential(8)); // HIGH RUSH
             }
             else if (current_time < 7200) // 19:00 - 20:00
             {
-                Activate(Time + Exponential(10)); // MEDIUM RUSH
+                Activate(Time + Exponential(12)); // MEDIUM RUSH
             }
             else if (current_time < 10800) // 20:00 - 21:00
             {
-                Activate(Time + Exponential(20)); // LOW RUSH
+                Activate(Time + Exponential(25)); // LOW RUSH
             }
         }
     }
