@@ -195,6 +195,8 @@ class GeneratorDay : public Event
         if (!open)
         {
             Cancel();
+            Print("Closed");
+            Print(skier_cnt);
         }
         else
         {
@@ -202,30 +204,41 @@ class GeneratorDay : public Event
             (new Skier)->Activate();
             skier_cnt++;
 
-            // Adjust the inter-arrival time based on the current time
-            if (current_time < 9000)
-            {                                    // Morning (8:30 to 11:00)
-                Activate(Time + Exponential(3)); // Generate more frequently in the morning
+            if (current_time < 1800) // 8:30 - 9:00 ULTRA RUSH
+            {
+                Activate(Time + Exponential(6));
             }
-            else if (current_time >= 32400)
-            { // After 17:00 (simulation ends at 17:00)
-                Cancel();
+            else if (current_time < 5400) // 9:00 - 10:00 HIGH RUSH
+            {
+                Activate(Time + Exponential(10));
             }
-            else if (current_time >= 18000 && current_time < 32400)
-            { // After lunch (12:00 to 17:00)
-                if (isMorning)
-                {
-                    isMorning = false;
-                    Activate(Time + Exponential(8)); // Generate less frequently after lunch
-                }
-                else
-                {
-                    Activate(Time + Exponential(3)); // Generate more frequently after lunch
-                }
+            else if (current_time < 9000) // 10:00 - 11:00 HIGH RUSH
+            {
+                Activate(Time + Exponential(15));
+            }
+            else if (current_time < 12600) // 11:00 - 12:00 MEDIUM RUSH
+            {
+                Activate(Time + Exponential(20));
+            }
+            else if (current_time < 16200) // 12:00 - 13:00 LOW RUSH
+            {
+                Activate(Time + Exponential(25));
+            }
+            else if (current_time < 19800) // 13:00 - 14:00 ULTRA RUSH
+            {
+                Activate(Time + Exponential(20));
+            }
+            else if (current_time < 23400) // 14:00 - 15:00 HIGH RUSH
+            {
+                Activate(Time + Exponential(15));
+            }
+            else if (current_time < 27000) // 15:00 - 16:00 LOW RUSH
+            {
+                Activate(Time + Exponential(10));
             }
             else
-            {                                    // During lunchtime (11:00 to 12:00)
-                Activate(Time + Exponential(6)); // Generate less frequently during lunch
+            {
+                Cancel();
             }
         }
     }
@@ -243,6 +256,8 @@ class GeneratorNight : public Event
         if (!open)
         {
             Cancel();
+            Print("Closed");
+            Print(skier_cnt);
         }
         else
         {
@@ -250,21 +265,18 @@ class GeneratorNight : public Event
             (new Skier)->Activate();
             skier_cnt++;
 
-            // Adjust the inter-arrival time based on the current time
-            if (current_time < 5400)
-            {                                     // First interval: More frequent initially (18:00 to 19:30)
-                Activate(Time + Exponential(10)); // More frequent generation at the beginning
+            // 18:00 - 21:00
+            if (current_time < 3600) // 18:00 - 19:00
+            {
+                Activate(Time + Exponential(6)); // HIGH RUSH
             }
-            else if (current_time >= 23400)
-            { // After 21:00 (simulation ends at 21:00)
-                Cancel();
+            else if (current_time < 7200) // 19:00 - 20:00
+            {
+                Activate(Time + Exponential(10)); // MEDIUM RUSH
             }
-            else
-            {                                                  // Later intervals: Decreasing frequency
-                double remaining_time = 23400 - current_time;  // Remaining time until 21:00
-                double rate = 5 + 5 * (remaining_time / 1800); // Decreasing rate over 30 minutes
-
-                Activate(Time + Exponential(rate)); // Decreasing frequency towards the end of the night
+            else if (current_time < 10800) // 20:00 - 21:00
+            {
+                Activate(Time + Exponential(20)); // LOW RUSH
             }
         }
     }
