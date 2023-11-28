@@ -51,7 +51,7 @@ build cmake_object_order_depends_target_IMS_Project: phony || CMakeFiles/IMS_Pro
 
 build CMakeFiles/IMS_Project.dir/main.cpp.o: CXX_COMPILER__IMS_Project_Debug /home/daniel/Documents/3BITZ/IMS/IMS-Project/main.cpp || cmake_object_order_depends_target_IMS_Project
   DEP_FILE = CMakeFiles/IMS_Project.dir/main.cpp.o.d
-  FLAGS = -g -fdiagnostics-color=always -std=gnu++14
+  FLAGS = -g -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles/IMS_Project.dir
   OBJECT_FILE_DIR = CMakeFiles/IMS_Project.dir
 

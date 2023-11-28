@@ -47,10 +47,10 @@ enum lift
 
 int skier_cnt = 0;
 
-extern Store marta1(2);
-extern Store marta2(4);
-extern Store kotva(2);
- Facility poma;
+Store marta1(2);
+Store marta2(4);
+Store kotva(2);
+Facility poma;
 
 extern std::vector<std::pair<double, double>> skier_stats;
 

@@ -2,8 +2,7 @@
 \documentclass[a4paper, 11pt]{article}\usepackage{times}
 \usepackage{graphicx}
 \usepackage[hyphens]{url}
-
-
+\usepackage{hyperref}
 \usepackage[czech]{babel}
 \usepackage[utf8]{inputenc}
 
@@ -14,10 +13,10 @@
     \begin{figure}[!h]
             \centering
             \includegraphics[scale=0.7]{logo.eps}
-        \end{figure}        
-    
+        \end{figure}
+
         \vspace{100px}
-    
+
         \huge{
             \textbf{
                 Simulační studie\\ provozu skiareálu \\
@@ -47,10 +46,10 @@
 \newpage
 \pagenumbering{arabic}
 \setcounter{page}{1}
-\section{Úvod} % Matej 
-% KRATKY POPIS STREDISKA 
-%par slov o modelu 
-% hlavne cile simulace 
+\section{Úvod} % Matej
+% KRATKY POPIS STREDISKA
+%par slov o modelu
+% hlavne cile simulace
 \section{Popis střediska}
 \subsection{Plány střediska}
 % 2 planky z internetu
@@ -59,29 +58,47 @@
 \subsection{Lanové dráhy}
 % delka, doba vyjezdu, frakvence nabirani lidi, kapacita, kratky technicky popis (rozdil sedackova x kotva napr.)
 \subsection{Sjezdovky}
-%delka obtiznost, moznosti kam prejet 
+%delka obtiznost, moznosti kam prejet
 \subsection{Násvštěvníci}
-%chovani prichody rychost 
+%chovani prichody rychost
 \section{Model}  % Dan
+\subsection{Technologie}
+Při implementaci modelu, pro doplnění simulační studie, byl použit programovací jazyk \texttt{C/C++} s využitím knihovny SIMLIB. \cite{SIMLIB} ve verzi \texttt{3.08}.SIMLIB/C++ je jednoduchá simulační hnihovna pro programovací jazyk C++., vyvinutá na Fakultě informačních technologií Vysokého učení technického v Brně. Pro překlad projektu lze použít jak nástroj CMake tak i GNU Make. Překlad proběhne za  použití kompilátoru GNU c++ a standardu C++20. Vývojové a testovací prostředí projektu je školní server Merlin: \texttt{Linux merlin.fit.vutbr.cz 5.10.195 \#1 SMP Thu Sep 21  09:00:13 CEST 2023 x86\_64 x86\_64 x86\_64 GNU/Linux}.
 
-\subsection{Návrh modelu}
+\subsection{Vytvoření abstraktního modelu}
+Při vytváření modelu byl nejprve stanoven účel simulační studie. S ohledem na tento cíl byla pak z popisu areálu a jeho režimu vytvořena Petriho síť. V této síti byly stanoveny místa, ve kterých potřebujeme zaznamenat stav systému. Dále zde byly vyznačeny místa, ve kterých známe a neznáme údaje systému. Chybějící údaje byly poté doplněny z internetových zdrojů, osobních konzultací nebo analyticky dopočítány. Petriho síť zobrazuje 4 různé obslužné linky, generátor procesů a událost konce pracovní doby. Po vytvoření abstraktního popisu systému následovala implementace simulačního modelu.
 
-\subsection{Popis modelu}
+\subsection{Vytvoření simulačního modelu}
+ Jak sedačky lanovky nebo vleku tak i lyžaři mají v systému dikrétní chování a model byl tedy koncipován jako systém hromadné obsluhy. Kdy obslužnými linkami jsou vleky a lanovky, dopravující lyžaře na vrchol sjezdovek. Příchozími požadavky jsou návštěvnící ski areálu tedy lyžaři. Vzhledem k tomu, že lanovky a kotva mají kapacitu obsluhy větší než jedna, byl pro ně zvolen typ obslužné linky Sklad \texttt{Store}. Pro pomu s kapacitou jedna byla použita klasická obslužná linka \texttt{Facility}.
+ \\
 
-\subsection{Implementace modelu}
+ Lyžař vstupující do systému je realizován jako podtřída třídy \texttt{Process}.
+ Při inicializaci každého lyžaře je náhodně rozhodnuto, u kterého vlaku začne.
+ Toto rozhodování realizuje metoda \texttt{Skier::choose\_start}.
+ Lyžař příchází k obslužné lince/lanovce a zabere místo na nástupišti a čeká dobu danou proměnnou \texttt{departure}, která vychází z frekvence příjezdu sedaček. Po nástupu uvolní místo na nátupišti a čeká různou dobu pro každou lanovku/vlek simulující jízdu nahoru. Jízda lanovkou je implementována v metodě \texttt{Skier::ride\_up}.\\
 
-\subsection{Testování modelu}
+ Po uplnutí této doby se lyžař rozhoduje, kterou sjezdovkou pojede. Toto je dáno přiřazením pravděpodobností jednotlivým možnostem, a generování náhodného čísla pomocí funkce \texttt{Random()}. Po zvolení lyžař čeká dobu danou normálním rozdělením, simulující čas strávený na sjezdovce. Čas pro každou sjezdovku je jiný s ohledem na její prudkost a délku. Vhledem ke zvolené sjezdovce následuje poté rozhodování, který vlek, k cestě nahoru, zvolit. Rozhodování na dolním konci sjezdovky je opět realizováno přiřazením pravděpodobností a generováním náhodného čísla. Sjezd lyžaře implementuje metoda \texttt{Skier::ride\_down}. \\
+ Takto se procedura výjezdu a sjezdu opakuje dokud areál nezavře nebo dokud lyžaři nedojdou jízdy. Během této doby si může lyžař dát pauzu na dobu dannou exponenciálním rozdělením se středem stanoveným proměnnou \texttt{pause}. Než lyžař opustí sytém jsou zanamenány jeho statistiky do struktury \texttt{skier\_stats}. Poté je process lyžař dealokován. \\
+
+ Generátor příchozích požadovků je podtřídou třídy \texttt{Event} knihovny SIMLIB.
+ Generování může probíhat dle argumentů programu ve dvou režimech: denní a noční. Každý režim je definován svou vlastní pracovní dobou a různou rychlostí příchodu požadavků do systému v různém modelovém čase. Denní režim má pracovní dobu dlouhou 7,5 hodiny a přichází ve dvou vlnách, dopolední a odpolední. Noční režim trvá 3 hodiny a požadavky se tedy nahrnou v jedné vlně na startu pracovní doby. Během generování dochází k zaznamenávání počtu příchozích lyžařů, což bude sloužit jako jedna z metrik validace modelu. \\
+ Spolu se startem simulace je aktivována událost konce pracovní doby \texttt{openning\_hours}. Událost je rovněž realizována jako podtřída třídy  \texttt{Event}. Tato událost čeká po nastavenou dobu a poté přeruší generování nových požadavků a obsluhu stávajících nastavením globálního příznaku \texttt{open} na false. Událost je poté dealokována.
+
+ Po skončení simulace jsou uživateli vypsány statistiky z danného běhu programu, relevantní pro simulační studii.
+
+\subsection{Verifikace a validace}
+
+Během vývoje byly průběžné výsledky porovnávány s reálným chováním systému dle popisu výše.
+Byl sledován počet příchozích požadovků, a upravováno generování, tak aby přiblžně odpovídal navštěvnosti skiareálu za danné časové odobí. Sledován byl take čas příchodu lyžařů, aby se například nestalo, že požadavky se začnou hromadit až před koncem pracovní doby. Dále byly sledovány čekací časy, tak aby lyžaři čekali ve frontě realitě se blížící dobu. U vleků a lanovek jsme také monitorovali celkové počty přepravených osob tak, aby vytíženost jednotlivých dopravních prostředků odpovídala jejich běžnému pracovnímu režimu. Nakonec jsme výsledku modelu osobně konzultovali s majitelem podobně velkého střediska, abychom si ověřili validitu našeho modelu.
 
 \section{Experimenty}
 
-\section{Vyhodnocení experimentů} %dan + matej
+\section{Analýza a interpretace výsledků} %dan + matej
 
 \section{Závěr} % dan + matej
 
 \section{Zdroje informaci}
-
-
-
-
+\bibliographystyle{czechiso}
+	\bibliography{main}
 \end{document}
 
