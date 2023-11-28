@@ -1,55 +1,21 @@
-#include "simlib.h"
-#include <vector>
-#include <utility>
-#include <algorithm>
-#include <string.h>
+/**
+ * VUT FIT IMS project - Freshbox food distribution.
+ *
+ * @file Work shift process implementation.
+ * @author Dominik Harmim <xharmi00@stud.fit.vutbr.cz>
+ * @author Vojtech Hertl <xhertl04@stud.fit.vutbr.cz>
+ */
 
-/// time to lift the skier uphill
-const int way_up_marta1 = 300;
-const int way_up_marta2 = 180;
-const int way_up_kotva = 300;
-const int way_up_poma = 180;
-
-//frequency of lift
-const int departure_kotva = 12;
-const int departure_poma = 12;
-const int departure_marta1 = 12;
-const int departure_marta2 = 6;
-
-//ride down
-const int poma_marta1 = 84;
-const int poma_marta2 = 78;
-const int marta2_marta1 = 168;
-const int marta1_marta1 = 108;
-const int marta2_marta2 = 108;
-const int slunecna = 36;
-
-
-const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
-
-const double day_time = 27000;
-
-/// first lift
-
-Store marta1(2);
-Store marta2(4);
-Store kotva(2);
-Facility poma;
-
-enum lift
-{
-    MARTA1, // 0
-    MARTA2, // 1
-    KOTVA,   // 2
-    POMA//3
-};
-
+#include "constants.h"
+/**
+ * @struct Contains information about each Skier that leaves the system 
+ */
 std::vector<std::pair<double, double>> skier_stats;
 
-bool lift_ready = false;
-bool ok = true;
-bool open = false;
-
+/**
+ * @class Represents working hours of ski centre 
+ * Depends on open_time 
+ */
 class Open_hours : public Process
 {
 private:
@@ -57,7 +23,7 @@ private:
 
 public:
     // Constructor
-    Open_hours(double openTime) : open_time(openTime) {}
+    explicit Open_hours(double openTime) : open_time(openTime) {}
 
     void Behavior() override
     {
@@ -67,21 +33,25 @@ public:
         Cancel(); // Cancel the process
     }
 };
-/// skier
+
+/**
+ * @class Defines one visitor of the ski centre 
+ * Defines his behavior and attributes necessary for the simulation 
+ */
 class Skier : public Process
 {
-    // double max_time;
-    // bool pauzicka
-    // ski vs board
+    int rides = 10;                  /// number of rides until the skier leaves system
+    lift current_lift;               /// which next lift will take the skier
+    lift first_lift;                 /// initial lift when entering the system
+    double time_spent_skiing = 0;    /// time spend on the slopes
+    double time_spent_other = 0;     /// time spent waiting, transporting or having pause
+    double start_time;               /// start at which the skier entered the system
+    double pause;                    /// how long will the skier take pause
+    int pause_cnt;                   /// how many pauses have already taken
 
-    int jizdy = 10;
-    lift current_lift;
-    double time_spent_skiing = 0;
-    double time_spent_other = 0;
-    double start_time;
-    double pause;
-    int pause_cnt;
-
+    /**
+     * @brief Method defines the first lift that will the skier take
+     */
     void choose_start()
     {
         double val = Random();
@@ -101,8 +71,12 @@ class Skier : public Process
         {
             current_lift = KOTVA;
         }
-    }
 
+        first_lift = current_lift;
+    }
+    /**
+     * @brief Checks for time to take pause
+     */
     void check_pause(){
 
         if(Time > this->start_time + pause*pause_cnt){
@@ -112,43 +86,46 @@ class Skier : public Process
 
     }
 
+    /**
+     * @brief Defines behaviour of the skier when riding down the slopes
+     */
     void ride_down()
     {
-        if (current_lift == MARTA1 || current_lift == KOTVA)
-        { // vyjel uplne nahoru
+        if (current_lift == MARTA1 || current_lift == KOTVA) /// top of marta 1
+        {
             double val = Random();
 
-            if (val < 0.5)
+            if (val < 0.5) /// ride down slope marta 1
             {
                Wait(Normal(marta1_marta1, 10));
                double val2 = Random();
-               if(val2 > 0.5){
+               if(val2 > 0.5){ ///choosing lift at the bottom of martha 1 and kotva
                    current_lift = MARTA1;
                }else{
                    current_lift = KOTVA;
                }
 
             }
-            else
-            { // slunecna
+            else /// ride down slunecna slope
+            {
                 Wait(Normal(slunecna, 10));
                 val = Random();
-                if (val < 0.9)
+                if (val < 0.9) /// continues to marta 2 slope
                 {
-                    Wait(Normal(marta2_marta2, 10)); // sjizdi marta 2
+                    Wait(Normal(marta2_marta2, 10));
                     double val2 = Random();
-                    if(val2 < 0.9){
+                    if(val2 < 0.9){  ///choosing lift at the bottom of marta 2 and poma
                         current_lift = MARTA2;
                     }else{
                         current_lift = POMA;
                     }
 
                 }
-                else
+                else ///continues back to the bottom of martha 1
                 {
-                    Wait(Normal(marta2_marta1, 10)); // prejezd marta 2 -> 1
+                    Wait(Normal(marta2_marta1, 10));
                     double val2 = Random();
-                    if(val2 < 0.5){
+                    if(val2 < 0.5){  ///choosing lift at the bottom of martha 1 and kotva
                         current_lift = MARTA1;
                     }else{
                         current_lift = KOTVA;
@@ -156,12 +133,12 @@ class Skier : public Process
                 }
             }
         }
-        else if(current_lift == POMA){
-            // vyjel kotvou podel marta2 bokem
+        else if(current_lift == POMA){ /// skier just took the lift poma
+
             double val = Random();
-            if (val < 0.7)
+            if (val < 0.7) /// takes the slope back to bottom of martha 2 and poma
             {
-                Wait(Normal(poma_marta2, 10)); // sjizdi marta 2
+                Wait(Normal(poma_marta2, 10));
                 double val2 = Random();
                 if(val2 < 0.9){
                     current_lift = MARTA2;
@@ -169,23 +146,23 @@ class Skier : public Process
                     current_lift = POMA;
                 }
             }
-            else
+            else /// switches the slope and continues to martha 1 and kotva
             {
-                Wait(Normal(poma_marta1, 10)); // prejezd marta 2 -> 1
+                Wait(Normal(poma_marta1, 10));
                 double val2 = Random();
-                if(val2 < 0.5){
+                if(val2 < 0.5){ ///choosing lift at the bottom of martha 1 and kotva
                     current_lift = MARTA1;
                 }else{
                     current_lift = KOTVA;
                 }
             }
         }
-        else
-        { // vyjel do pulky pres marta 2
+        else  ///skier just took the lift martha 2
+        {
             double val = Random();
-            if (val < 0.7)
+            if (val < 0.7)  /// continues back on martha 2 slope
             {
-                Wait(Normal(marta2_marta2, 10)); // sjizdi marta 2
+                Wait(Normal(marta2_marta2, 10));
                 double val2 = Random();
                 if(val2 < 0.9){
                     current_lift = MARTA2;
@@ -193,9 +170,9 @@ class Skier : public Process
                     current_lift = POMA;
                 }
             }
-            else
+            else  ///switches and continues to martha 1 and kotva
             {
-                Wait(Normal(marta2_marta1, 10)); // prejezd marta 2 -> 1
+                Wait(Normal(marta2_marta1, 10));
                 double val2 = Random();
                 if(val2 < 0.5){
                     current_lift = MARTA1;
@@ -207,15 +184,18 @@ class Skier : public Process
         check_pause();
     }
 
+    /**
+     * @brief Defines the process of taking the skier up
+     */
     void ride_up()
     {
 
         if (current_lift == MARTA1)
         {
-            Enter(marta1, 1);
-            Wait(departure_marta1);
-            Leave(marta1, 1);
-            Wait(way_up_marta1);
+            Enter(marta1, 1); /// seize place at the platform
+            Wait(departure_marta1); ///wait for lift
+            Leave(marta1, 1); /// free the place (sit on the lift and go)
+            Wait(way_up_marta1); /// going with the lift up
         }
         else if (current_lift == MARTA2)
         {
@@ -230,41 +210,46 @@ class Skier : public Process
             Release(poma);
             Wait(way_up_poma);
         }
-        else{
+        else{ // KOTVA
             Enter(kotva, 1);
             Wait(departure_kotva);
             Leave(kotva, 1);
             Wait(way_up_kotva);
         }
     }
-
+    /**
+     * @brief Defines behavior of process Skier
+     */
     void Behavior() override
     {
         start_time = Time;
-        pause = Exponential(day_time/4);
+        pause = Exponential(day_time/4); /// will take approx. 4 pauses per day time
         pause_cnt = 1;
-        choose_start();
-        while (jizdy > 0 && open)
+        choose_start(); /// spawn at the bottom of some lift
+        while (rides > 0 && open) /// while have rides and the ski areal is open
         {
             double tmp = Time;
             ride_up();
-            time_spent_other += (Time - tmp);
+            time_spent_other += (Time - tmp); /// compute other activities
             tmp = Time;
             ride_down();
-            time_spent_skiing += (Time - tmp);
-            jizdy--;
+            time_spent_skiing += (Time - tmp); /// compute skiing
+            rides--;
         }
+        ///compute the ration of skiing to other activities
         double skiing_ratio;
-        if(jizdy == 0){
+        if(rides == 0){
              skiing_ratio = time_spent_skiing/(time_spent_skiing+time_spent_other)*100;
         }else{
              skiing_ratio =0;
         }
 
-        skier_stats.emplace_back(start_time, skiing_ratio);
+        skier_stats.emplace_back(start_time, skiing_ratio); ///save the stats
+
+        Terminate(); ///skier leaves the system
     }
 };
-int skier_cnt = 0;
+
 class GeneratorDay : public Event
 {
 
@@ -402,6 +387,8 @@ int main(int argc, char *argv[])
     // (new Generator)->Activate();
 
     Run();
+
+    /// print statistics about the skiers
     std::sort(skier_stats.begin(), skier_stats.end(),
               [](const auto& lhs, const auto& rhs) {
                   return lhs.first < rhs.first;
@@ -414,6 +401,7 @@ int main(int argc, char *argv[])
         Print(pair.second);
         Print("%\n");
     }
+    /// output for the user
 
     Print("Simulation done.\n");
     Print("Total number of visitors.");
