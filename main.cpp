@@ -1,5 +1,4 @@
 #include "simlib.h"
-#include <cmath>
 #include <vector>
 #include <utility>
 #include <algorithm>
@@ -9,7 +8,8 @@ const int way_up_marta1 = 300;
 const int way_up_marta2 = 180;
 const int way_up_kotva = 300;
 const int departure = 10;
-
+const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
+const double day_time = 27000;
 /// first lift
 
 Store marta1(2);
@@ -58,6 +58,8 @@ class Skier : public Process
     double time_spent_skiing = 0;
     double time_spent_other = 0;
     double start_time;
+    double pause;
+    int pause_cnt;
 
     void choose_start()
     {
@@ -75,6 +77,15 @@ class Skier : public Process
         {
             current_lift = KOTVA;
         }
+    }
+
+    void check_pause(){
+
+        if(Time > this->start_time + pause*pause_cnt){
+            Wait(Exponential(pause_duration));
+            pause_cnt++;
+        }
+
     }
 
     void ride_down()
@@ -134,6 +145,7 @@ class Skier : public Process
                 }
             }
         }
+        check_pause();
     }
 
     void ride_up()
@@ -165,6 +177,8 @@ class Skier : public Process
     void Behavior() override
     {
         start_time = Time;
+        pause = Exponential(day_time/4);
+        pause_cnt = 1;
         choose_start();
         while (jizdy > 0 && open)
         {
@@ -232,7 +246,6 @@ int main(int argc, char *argv[])
 {
     Print("Project IMS 2023\n");
     Init(0, 40000);
-    double day_time = 27000;
     (new Open_hours(day_time))->Activate();
     (new Generator)->Activate();
 
