@@ -2,6 +2,7 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
+#include <string.h>
 
 /// time to lift the skier uphill
 const int way_up_marta1 = 300;
@@ -136,7 +137,7 @@ class Skier : public Process
                 {
                     Wait(Normal(marta2_marta2, 10)); // sjizdi marta 2
                     double val2 = Random();
-                    if(val2 < 0.8){
+                    if(val2 < 0.9){
                         current_lift = MARTA2;
                     }else{
                         current_lift = POMA;
@@ -264,53 +265,141 @@ class Skier : public Process
     }
 };
 int skier_cnt = 0;
-class Generator : public Event
+class GeneratorDay : public Event
 {
 
-    // todo night openning hours
-    // todo day openning hours
-    int exp = 0;
-    int cnt = 0;
-
-    double get_interval(){
-        cnt++;
-        if(cnt < 100){ // first 100 visitors
-            return Exponential(1);
-        }else if(cnt < 1000){
-            return Exponential(5);
-        }
-        else if(cnt < 2000) {
-            return Exponential(20);
-        }else{
-            return Exponential(100);
-        }
-
-    }
+    double current_time = 0.0;
 
     void Behavior() override
     {
+        current_time = Time;
+
         if (!open)
         {
             Cancel();
+            Print("Closed");
+            //Print(skier_cnt);
         }
         else
         {
+            //Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
-            Print("Skier generated at ");
-            Print(Time);
-            Print("\n");
-            Activate(Time + get_interval());
+
+            if (current_time < 10800)
+            {                                    // 8:30 - 11:00 (ULTRA RUSH)
+                Activate(Time + Exponential(8)); // Adjusted rate for ULTRA RUSH hours
+            }
+            else if (current_time < 13200)
+            {                                     // 11:00 - 12:00 (MEDIUM RUSH)
+                Activate(Time + Exponential(15)); // Adjusted rate for MEDIUM RUSH hours
+            }
+            else if (current_time < 18000)
+            {                                     // 12:00 - 13:00 (LOW RUSH)
+                Activate(Time + Exponential(20)); // Adjusted rate for LOW RUSH hours
+            }
+            else if (current_time < 21600)
+            {                                     // 13:00 - 15:00 (HIGH RUSH)
+                Activate(Time + Exponential(15)); // Adjusted rate for HIGH RUSH hours
+            }
+            else if (current_time < 27000)
+            {                                     // 15:00 - 16:00 (LOW RUSH)
+                Activate(Time + Exponential(10)); // Adjusted rate for LOW RUSH hours
+            }
+            else
+            {
+                Cancel();
+            }
         }
     }
 };
 
+class GeneratorNight : public Event
+{
+
+    double current_time = 0.0;
+
+    void Behavior() override
+    {
+        current_time = Time;
+
+        if (!open)
+        {
+            Cancel();
+            Print("Closed");
+            //Print(skier_cnt);
+        }
+        else
+        {
+            //Print(skier_cnt);
+            (new Skier)->Activate();
+            skier_cnt++;
+
+            // 18:00 - 21:00
+            if (current_time < 3600) // 18:00 - 19:00
+            {
+                Activate(Time + Exponential(8)); // HIGH RUSH
+            }
+            else if (current_time < 7200) // 19:00 - 20:00
+            {
+                Activate(Time + Exponential(12)); // MEDIUM RUSH
+            }
+            else if (current_time < 10800) // 20:00 - 21:00
+            {
+                Activate(Time + Exponential(25)); // LOW RUSH
+            }
+        }
+    }
+};
+
+void print_help()
+{
+    Print("Usage: ./ims [day|night]\n");
+}
+
+bool parse_args(int argc, char *argv[])
+{
+    if (argc > 1)
+    {
+        if (strcmp(argv[1], "day") == 0)
+        {
+            return true;
+        }
+        else if (strcmp(argv[1], "night") == 0)
+        {
+            return false;
+        }
+        else
+        {
+            print_help();
+            exit(0);
+        }
+    }
+    return true;
+}
+
+
 int main(int argc, char *argv[])
 {
-    Print("Project IMS 2023\n");
+    bool day = parse_args(argc, argv); // by default day if no args
+
+    Print("Project IMS 2023");
     Init(0, 40000);
-    (new Open_hours(day_time))->Activate();
-    (new Generator)->Activate();
+    double day_time = 27000;
+    double night_time = 10800;
+
+    if (day)
+    { // day
+        (new Open_hours(day_time))->Activate();
+        (new GeneratorDay)->Activate();
+    }
+    else
+    { // night
+        (new Open_hours(night_time))->Activate();
+        (new GeneratorNight)->Activate();
+    }
+    // (new Open_hours(day_time))->Activate();
+    // (new Generator)->Activate();
 
     Run();
     std::sort(skier_stats.begin(), skier_stats.end(),
