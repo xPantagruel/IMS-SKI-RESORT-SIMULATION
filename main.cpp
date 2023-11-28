@@ -7,8 +7,12 @@
 const int way_up_marta1 = 300;
 const int way_up_marta2 = 180;
 const int way_up_kotva = 300;
-const int departure = 10;
+const int way_up_poma = 180;
+
+const int departure = 10; //todo podle frekvence vleku
+
 const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
+
 const double day_time = 27000;
 /// first lift
 
@@ -16,11 +20,14 @@ Store marta1(2);
 Store marta2(4);
 Store kotva(2);
 
+Facility poma;
+
 enum lift
 {
     MARTA1, // 0
     MARTA2, // 1
-    KOTVA   // 2
+    KOTVA,   // 2
+    POMA//3
 };
 
 std::vector<std::pair<double, double>> skier_stats;
@@ -64,14 +71,17 @@ class Skier : public Process
     void choose_start()
     {
         double val = Random();
-        if (val < 0.33)
+        if (val < 0.25)
         {
-
             current_lift = MARTA1;
         }
-        else if (val < 0.66)
+        else if (val < 0.5)
         {
             current_lift = MARTA2;
+
+        }else if (val < 0.75){
+
+             current_lift = POMA;
         }
         else
         {
@@ -112,7 +122,13 @@ class Skier : public Process
                 if (val < 0.7)
                 {
                     Wait(108); // sjizdi marta 2
-                    current_lift = MARTA2;
+                    double val2 = Random();
+                    if(val2 > 0.5){
+                        current_lift = MARTA2;
+                    }else{
+                        current_lift = POMA;
+                    }
+
                 }
                 else
                 {
@@ -126,13 +142,42 @@ class Skier : public Process
                 }
             }
         }
+        else if(current_lift == POMA){
+            // vyjel kotvou podel marta2 bokem
+            double val = Random();
+            if (val < 0.7) //TODO change %
+            {
+                Wait(108); // sjizdi marta 2 TODO change time
+                double val2 = Random();
+                if(val2 > 0.5){ //todo
+                    current_lift = MARTA2;
+                }else{
+                    current_lift = POMA;
+                }
+            }
+            else
+            {
+                Wait(168); // prejezd marta 2 -> 1 TODO change time
+                double val2 = Random();
+                if(val2 < 0.5){ //TODO change %
+                    current_lift = MARTA1;
+                }else{
+                    current_lift = KOTVA;
+                }
+            }
+        }
         else
         { // vyjel do pulky pres marta 2
             double val = Random();
             if (val < 0.7)
             {
                 Wait(108); // sjizdi marta 2
-                current_lift = MARTA2;
+                double val2 = Random();
+                if(val2 > 0.5){ //todo
+                    current_lift = MARTA2;
+                }else{
+                    current_lift = POMA;
+                }
             }
             else
             {
@@ -165,8 +210,13 @@ class Skier : public Process
             Leave(marta2, 1);
             Wait(way_up_marta2);
         }
-        else
-        {
+        else if (current_lift == POMA){
+            Seize(poma);
+            Wait(departure);
+            Release(poma);
+            Wait(way_up_poma);
+        }
+        else{
             Enter(kotva, 1);
             Wait(departure);
             Leave(kotva, 1);
@@ -273,6 +323,8 @@ int main(int argc, char *argv[])
     marta2.Output();
     Print("kotva");
     kotva.Output();
+    Print("poma");
+    poma.Output();
 
     return 0;
 }
