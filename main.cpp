@@ -9,17 +9,30 @@ const int way_up_marta2 = 180;
 const int way_up_kotva = 300;
 const int way_up_poma = 180;
 
-const int departure = 10; //todo podle frekvence vleku
+//frequency of lift
+const int departure_kotva = 12;
+const int departure_poma = 12;
+const int departure_marta1 = 12;
+const int departure_marta2 = 6;
+
+//ride down
+const int poma_marta1 = 84;
+const int poma_marta2 = 78;
+const int marta2_marta1 = 168;
+const int marta1_marta1 = 108;
+const int marta2_marta2 = 108;
+const int slunecna = 36;
+
 
 const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
 
 const double day_time = 27000;
+
 /// first lift
 
 Store marta1(2);
 Store marta2(4);
 Store kotva(2);
-
 Facility poma;
 
 enum lift
@@ -106,7 +119,7 @@ class Skier : public Process
 
             if (val < 0.5)
             {
-               Wait(108);
+               Wait(Normal(marta1_marta1, 10));
                double val2 = Random();
                if(val2 > 0.5){
                    current_lift = MARTA1;
@@ -117,13 +130,13 @@ class Skier : public Process
             }
             else
             { // slunecna
-                Wait(36);
+                Wait(Normal(slunecna, 10));
                 val = Random();
-                if (val < 0.7)
+                if (val < 0.9)
                 {
-                    Wait(108); // sjizdi marta 2
+                    Wait(Normal(marta2_marta2, 10)); // sjizdi marta 2
                     double val2 = Random();
-                    if(val2 > 0.5){
+                    if(val2 < 0.8){
                         current_lift = MARTA2;
                     }else{
                         current_lift = POMA;
@@ -132,7 +145,7 @@ class Skier : public Process
                 }
                 else
                 {
-                    Wait(168); // prejezd marta 2 -> 1
+                    Wait(Normal(marta2_marta1, 10)); // prejezd marta 2 -> 1
                     double val2 = Random();
                     if(val2 < 0.5){
                         current_lift = MARTA1;
@@ -145,11 +158,11 @@ class Skier : public Process
         else if(current_lift == POMA){
             // vyjel kotvou podel marta2 bokem
             double val = Random();
-            if (val < 0.7) //TODO change %
+            if (val < 0.7)
             {
-                Wait(108); // sjizdi marta 2 TODO change time
+                Wait(Normal(poma_marta2, 10)); // sjizdi marta 2
                 double val2 = Random();
-                if(val2 > 0.5){ //todo
+                if(val2 < 0.9){
                     current_lift = MARTA2;
                 }else{
                     current_lift = POMA;
@@ -157,9 +170,9 @@ class Skier : public Process
             }
             else
             {
-                Wait(168); // prejezd marta 2 -> 1 TODO change time
+                Wait(Normal(poma_marta1, 10)); // prejezd marta 2 -> 1
                 double val2 = Random();
-                if(val2 < 0.5){ //TODO change %
+                if(val2 < 0.5){
                     current_lift = MARTA1;
                 }else{
                     current_lift = KOTVA;
@@ -171,9 +184,9 @@ class Skier : public Process
             double val = Random();
             if (val < 0.7)
             {
-                Wait(108); // sjizdi marta 2
+                Wait(Normal(marta2_marta2, 10)); // sjizdi marta 2
                 double val2 = Random();
-                if(val2 > 0.5){ //todo
+                if(val2 < 0.9){
                     current_lift = MARTA2;
                 }else{
                     current_lift = POMA;
@@ -181,7 +194,7 @@ class Skier : public Process
             }
             else
             {
-                Wait(168); // prejezd marta 2 -> 1
+                Wait(Normal(marta2_marta1, 10)); // prejezd marta 2 -> 1
                 double val2 = Random();
                 if(val2 < 0.5){
                     current_lift = MARTA1;
@@ -199,26 +212,26 @@ class Skier : public Process
         if (current_lift == MARTA1)
         {
             Enter(marta1, 1);
-            Wait(departure);
+            Wait(departure_marta1);
             Leave(marta1, 1);
             Wait(way_up_marta1);
         }
         else if (current_lift == MARTA2)
         {
             Enter(marta2, 1);
-            Wait(departure);
+            Wait(departure_marta2);
             Leave(marta2, 1);
             Wait(way_up_marta2);
         }
         else if (current_lift == POMA){
             Seize(poma);
-            Wait(departure);
+            Wait(departure_poma);
             Release(poma);
             Wait(way_up_poma);
         }
         else{
             Enter(kotva, 1);
-            Wait(departure);
+            Wait(departure_kotva);
             Leave(kotva, 1);
             Wait(way_up_kotva);
         }
