@@ -4,7 +4,7 @@ LIBS = -lm -lsimlib
 
 SRCS = main.cpp
 OBJS = $(SRCS:.cpp=.o)
-EXEC = simulation
+EXEC = sim
 
 all: $(EXEC)
 
