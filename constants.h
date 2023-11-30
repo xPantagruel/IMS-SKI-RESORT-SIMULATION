@@ -44,6 +44,8 @@ extern const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
 
 extern const double day_time = 27000;
 
+int unfinished_rides =0;
+
 bool open = false;
 
 enum lift

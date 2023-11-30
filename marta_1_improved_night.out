@@ -1,0 +1,105 @@
+Simulation done.
+Total number of visitors. 872 
+Quality of skiing: 38.906 %
+Unfinished rides: 545 
+Marta 1 improved+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 4  (0 used, 4 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 1622                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 4                               |
+|  Average used capacity = 0.2433                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  528                                           |
+|  Outcoming  528                                          |
+|  Current length = 0                                      |
+|  Maximal length = 7                                      |
+|  Average length = 0.0409623                              |
+|  Minimal time = 0.00275115                               |
+|  Maximal time = 10.6287                                  |
+|  Average time = 3.1032                                   |
+|  Standard deviation = 2.041                              |
++----------------------------------------------------------+
+
+Marta 2+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 4  (0 used, 4 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 4832                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 4                               |
+|  Average used capacity = 0.7248                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  3328                                          |
+|  Outcoming  3328                                         |
+|  Current length = 0                                      |
+|  Maximal length = 44                                     |
+|  Average length = 1.46484                                |
+|  Minimal time = 0.00164856                               |
+|  Maximal time = 65.9569                                  |
+|  Average time = 17.6062                                  |
+|  Standard deviation = 16.45                              |
++----------------------------------------------------------+
+
+kotva+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 2  (0 used, 2 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 296                        |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 2                               |
+|  Average used capacity = 0.0888                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  55                                            |
+|  Outcoming  55                                           |
+|  Current length = 0                                      |
+|  Maximal length = 3                                      |
+|  Average length = 0.0109573                              |
+|  Minimal time = 1.02519                                  |
+|  Maximal time = 20.2954                                  |
+|  Average time = 7.96896                                  |
++----------------------------------------------------------+
+
+poma+----------------------------------------------------------+
+| FACILITY                                                 |
++----------------------------------------------------------+
+|  Status = not BUSY                                       |
+|  Time interval = 0 - 40000                               |
+|  Number of requests = 553                                |
+|  Average utilization = 0.1659                            |
++----------------------------------------------------------+
+  Input queue '.Q1'
++----------------------------------------------------------+
+| QUEUE Q1                                                 |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  433                                           |
+|  Outcoming  433                                          |
+|  Current length = 0                                      |
+|  Maximal length = 12                                     |
+|  Average length = 0.451372                               |
+|  Minimal time = 0.0310931                                |
+|  Maximal time = 141.92                                   |
+|  Average time = 41.6972                                  |
+|  Standard deviation = 32.0821                            |
++----------------------------------------------------------+
+

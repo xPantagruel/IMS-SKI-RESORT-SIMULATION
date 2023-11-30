@@ -1,0 +1,108 @@
+Simulation done.
+Total number of visitors. 2225 
+Quality of skiing: 37.9234 %
+Unfinished rides: 507 
+Marta 1+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 2  (0 used, 2 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 2299                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 2                               |
+|  Average used capacity = 0.6897                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  1855                                          |
+|  Outcoming  1855                                         |
+|  Current length = 0                                      |
+|  Maximal length = 64                                     |
+|  Average length = 4.66252                                |
+|  Minimal time = 0.0636773                                |
+|  Maximal time = 382.881                                  |
+|  Average time = 100.54                                   |
+|  Standard deviation = 95.8458                            |
++----------------------------------------------------------+
+
+Marta 2+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 4  (0 used, 4 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 12971                      |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 4                               |
+|  Average used capacity = 1.94565                         |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  9025                                          |
+|  Outcoming  9025                                         |
+|  Current length = 0                                      |
+|  Maximal length = 60                                     |
+|  Average length = 3.36767                                |
+|  Minimal time = 0.00196949                               |
+|  Maximal time = 89.4731                                  |
+|  Average time = 14.926                                   |
+|  Standard deviation = 15.688                             |
++----------------------------------------------------------+
+
+kotva+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 2  (0 used, 2 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 2005                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 2                               |
+|  Average used capacity = 0.6015                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  1590                                          |
+|  Outcoming  1590                                         |
+|  Current length = 0                                      |
+|  Maximal length = 63                                     |
+|  Average length = 4.23054                                |
+|  Minimal time = 0.282979                                 |
+|  Maximal time = 376.539                                  |
+|  Average time = 106.429                                  |
+|  Standard deviation = 93.2319                            |
++----------------------------------------------------------+
+
+poma improved+----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 2  (0 used, 2 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 2243                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 2                               |
+|  Average used capacity = 0.6729                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  1772                                          |
+|  Outcoming  1772                                         |
+|  Current length = 0                                      |
+|  Maximal length = 29                                     |
+|  Average length = 1.77491                                |
+|  Minimal time = 0.0452957                                |
+|  Maximal time = 175.391                                  |
+|  Average time = 40.0658                                  |
+|  Standard deviation = 32.618                             |
++----------------------------------------------------------+
+
