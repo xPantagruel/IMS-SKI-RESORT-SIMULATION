@@ -34,7 +34,7 @@ extern const int slunecna = 36;
 
 
 ///EXPERIMENTY
-extern bool marta_1_imporved = false;
+extern bool marta_1_improved = false;
 extern bool poma_improved = false;
 
 extern double speed_up = 0;
