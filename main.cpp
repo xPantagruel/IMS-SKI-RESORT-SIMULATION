@@ -89,6 +89,55 @@ class Skier : public Process
 
     }
 
+    void choose_bottom_marta2(){
+        if(poma_improved){
+            if (marta2.QueueLen() <= poma_improved_to_kotva.QueueLen())
+            { /// choosing lift at the bottom of marta 2 and poma
+                current_lift = MARTA2;
+            }
+            else
+            {
+                current_lift = POMA;
+            }
+        }
+        else{
+            if (marta2.QueueLen() <= poma.QueueLen())
+            { /// choosing lift at the bottom of marta 2 and poma
+                current_lift = MARTA2;
+            }
+            else
+            {
+                current_lift = POMA;
+            }
+        }
+
+    }
+
+    void choose_bottom_marta1(){
+        if(marta_1_imporved){
+            if (marta1_improved.QueueLen() <= kotva.QueueLen() )
+            { /// choosing lift at the bottom of martha 1 and kotva
+                current_lift = MARTA1;
+            }
+            else
+            {
+                current_lift = KOTVA;
+            }
+
+        }else{
+            if (marta1.QueueLen() <= kotva.QueueLen() )
+            { /// choosing lift at the bottom of martha 1 and kotva
+                current_lift = MARTA1;
+            }
+            else
+            {
+                current_lift = KOTVA;
+            }
+        }
+
+    }
+
+
     /**
      * @brief Defines behaviour of the skier when riding down the slopes
      */
@@ -101,14 +150,7 @@ class Skier : public Process
             if (val < 0.5) /// ride down slope marta 1
             {
                 Wait(std::max(Normal(marta1_marta1, 10), 0.0));
-                if (marta1_improved.QueueLen() <= kotva.QueueLen() )
-                { /// choosing lift at the bottom of martha 1 and kotva
-                    current_lift = MARTA1;
-                }
-                else
-                {
-                    current_lift = KOTVA;
-                }
+                choose_bottom_marta1();
             }
             else /// ride down slunecna slope
             {
@@ -117,25 +159,13 @@ class Skier : public Process
                 if (val < 0.9) /// continues to marta 2 slope
                 {
                     Wait(Normal(marta2_marta2, 10));
-                    if (marta2.QueueLen() <= poma_improved_to_kotva.QueueLen())
-                    { /// choosing lift at the bottom of marta 2 and poma
-                        current_lift = MARTA2;
-                    }
-                    else
-                    {
-                        current_lift = POMA;
-                    }
+                    choose_bottom_marta2();
 
                 }
                 else /// continues back to the bottom of martha 1
                 {
                     Wait(std::max(Normal(marta2_marta1, 10), 0.0));
-                    if (marta1_improved.QueueLen() <= kotva.QueueLen() )
-                    { /// choosing lift at the bottom of martha 1 and kotva
-                        current_lift = MARTA1;
-                    }else{
-                        current_lift = KOTVA;
-                    }
+                    choose_bottom_marta1();
                 }
             }
         }
@@ -145,20 +175,12 @@ class Skier : public Process
             if (val < 0.7) /// takes the slope back to bottom of martha 2 and poma
             {
                 Wait(std::max(Normal(poma_marta2, 10), 0.0));
-                if(marta2.QueueLen() <= poma_improved_to_kotva.QueueLen()){
-                    current_lift = MARTA2;
-                }else{
-                    current_lift = POMA;
-                }
+                choose_bottom_marta2();
             }
             else /// switches the slope and continues to martha 1 and kotva
             {
                 Wait(std::max(Normal(poma_marta1, 10), 0.0));
-                if(marta1_improved.QueueLen() <= kotva.QueueLen() ){ ///choosing lift at the bottom of martha 1 and kotva
-                    current_lift = MARTA1;
-                }else{
-                    current_lift = KOTVA;
-                }
+                choose_bottom_marta1();
             }
         }
         else  ///skier just took the lift martha 2
@@ -167,20 +189,12 @@ class Skier : public Process
             if (val < 0.7)  /// continues back on martha 2 slope
             {
                 Wait(std::max(Normal(marta2_marta2, 10), 0.0));
-                if(marta2.QueueLen() <= poma_improved_to_kotva.QueueLen()){
-                    current_lift = MARTA2;
-                }else{
-                    current_lift = POMA;
-                }
+                choose_bottom_marta2();
             }
             else  ///switches and continues to martha 1 and kotva
             {
                 Wait(std::max(Normal(marta2_marta1, 10), 0.0));
-                if(marta1_improved.QueueLen() <= kotva.QueueLen()){
-                    current_lift = MARTA1;
-                }else{
-                    current_lift = KOTVA;
-                }
+               choose_bottom_marta1();
             }
         }
         check_pause();
@@ -385,8 +399,8 @@ bool parse_args(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
 
-    marta_1_imporved = true;
-    poma_improved = true;
+    marta_1_imporved = false;
+    poma_improved = false;
     kotva_closing = false;
     poma_closing = false;
 
