@@ -40,7 +40,7 @@ public:
  */
 class Skier : public Process
 {
-    int rides = 10;               /// number of rides until the skier leaves system
+    int rides = 9;               /// number of rides until the skier leaves system
     lift current_lift;            /// which next lift will take the skier
     lift first_lift;              /// initial lift when entering the system
     double time_spent_skiing = 0; /// time spend on the slopes
@@ -101,7 +101,7 @@ class Skier : public Process
             }
         }
         else{
-            if (marta2.QueueLen() <= poma.QueueLen())
+            if (marta2.QueueLen() <= poma.QueueLen() + 8)
             { /// choosing lift at the bottom of marta 2 and poma
                 current_lift = MARTA2;
             }
@@ -147,7 +147,7 @@ class Skier : public Process
         {
             double val = Random();
 
-            if (val < 0.5) /// ride down slope marta 1
+            if (val < 0.3) /// ride down slope marta 1
             {
                 Wait(std::max(Normal(marta1_marta1, 10), 0.0));
                 choose_bottom_marta1();
@@ -156,7 +156,7 @@ class Skier : public Process
             {
                 Wait(std::max(Normal(slunecna, 10), 0.0));
                 val = Random();
-                if (val < 0.9) /// continues to marta 2 slope
+                if (val < 0.8) /// continues to marta 2 slope
                 {
                     Wait(Normal(marta2_marta2, 10));
                     choose_bottom_marta2();
@@ -172,7 +172,7 @@ class Skier : public Process
         else if(current_lift == POMA){ /// skier just took the lift poma
 
             double val = Random();
-            if (val < 0.7) /// takes the slope back to bottom of martha 2 and poma
+            if (val < 0.8) /// takes the slope back to bottom of martha 2 and poma
             {
                 Wait(std::max(Normal(poma_marta2, 10), 0.0));
                 choose_bottom_marta2();
@@ -186,7 +186,7 @@ class Skier : public Process
         else  ///skier just took the lift martha 2
         {
             double val = Random();
-            if (val < 0.7)  /// continues back on martha 2 slope
+            if (val < 0.8)  /// continues back on martha 2 slope
             {
                 Wait(std::max(Normal(marta2_marta2, 10), 0.0));
                 choose_bottom_marta2();
@@ -451,7 +451,7 @@ int main(int argc, char *argv[])
         Print("Marta 1 improved");
         marta1_improved.Output();
     }else{
-        Print("Marta 1 improved");
+        Print("Marta 1");
         marta1.Output();
     }
 
