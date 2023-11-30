@@ -412,7 +412,7 @@ int main(int argc, char *argv[])
 
     /// print statistics about the skiers
     std::sort(skier_stats.begin(), skier_stats.end(),
-              [](const auto& lhs, const auto& rhs) {
+              [](const std::pair<double, double>& lhs, const std::pair<double, double>& rhs) {
                   return lhs.first < rhs.first;
               });
     // Access and print the values in the vector
