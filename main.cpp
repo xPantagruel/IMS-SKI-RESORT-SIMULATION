@@ -34,6 +34,8 @@ public:
     }
 };
 
+
+
 /**
  * @class Defines one visitor of the ski centre
  * Defines his behavior and attributes necessary for the simulation
@@ -42,7 +44,6 @@ class Skier : public Process
 {
     int rides = 9;               /// number of rides until the skier leaves system
     lift current_lift;            /// which next lift will take the skier
-    lift first_lift;              /// initial lift when entering the system
     double time_spent_skiing = 0; /// time spend on the slopes
     double time_spent_other = 0;  /// time spent waiting, transporting or having pause
     double start_time;            /// start at which the skier entered the system
@@ -73,7 +74,6 @@ class Skier : public Process
             current_lift = KOTVA;
         }
 
-        first_lift = current_lift;
     }
     /**
      * @brief Checks for time to take pause
@@ -101,14 +101,31 @@ class Skier : public Process
             }
         }
         else{
-            if (marta2.QueueLen()/marta2.Capacity() <= poma.QueueLen()/1)
-            { /// choosing lift at the bottom of marta 2 and poma
-                current_lift = MARTA2;
+            if(poma_optimized){
+                if (marta2.QueueLen()/marta2.Capacity() <= poma.QueueLen()/1 + 32)
+                { /// choosing lift at the bottom of marta 2 and poma
+                    current_lift = MARTA2;
+                }
+                else
+                {
+                    if(first){
+                        start_using_poma = Time;
+                        first = false;
+                    }
+                    current_lift = POMA;
+                    end_using_poma = Time;
+                }
+            }else{
+                if (marta2.QueueLen()/marta2.Capacity() <= poma.QueueLen()/1)
+                { /// choosing lift at the bottom of marta 2 and poma
+                    current_lift = MARTA2;
+                }
+                else
+                {
+                    current_lift = POMA;
+                }
             }
-            else
-            {
-                current_lift = POMA;
-            }
+
         }
 
     }
@@ -253,6 +270,7 @@ class Skier : public Process
             Wait(way_up_marta2);
         }
         else if (current_lift == POMA){
+
             if(poma_improved){
                 Enter(poma_improved_to_kotva, 1);
                 Wait(departure_kotva);
@@ -327,7 +345,7 @@ class GeneratorDay : public Event
             //Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
-            double seed = -2.4;
+            double seed = - speed_up;
 
             if (current_time < 10800)
             {                                    // 8:30 - 11:00 (ULTRA RUSH)
@@ -378,7 +396,7 @@ class GeneratorNight : public Event
             (new Skier)->Activate();
             skier_cnt++;
 
-            double seed = -2.1;
+            double seed = - speed_up;
             // 18:00 - 21:00
             if (current_time < 3600) // 18:00 - 19:00
             {
@@ -426,19 +444,21 @@ bool parse_args(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
 
-    marta_1_imporved = false;
-    poma_improved = false;
-    kotva_closing = false;
-    poma_closing = false;
+    marta_1_imporved = false; // todo z argumentu
+    poma_improved = false; // todo z argumentu
+    poma_optimized = true; // todo z argumentu
+
+
+    speed_up = 0; // todo z argumentu (jak se ma zrychlit generovani seed)
 
     bool day = parse_args(argc, argv); // by default day if no args
 
     Print("Project IMS 2023");
     Init(0, 40000);
-    double day_time = 27000;
-    double night_time = 10800;
+     day_time = 27000;
+     night_time = 10800;
 
-    if (!day)
+    if (day)
     { // day
         (new Open_hours(day_time))->Activate();
         (new GeneratorDay)->Activate();
@@ -459,23 +479,16 @@ int main(int argc, char *argv[])
               {
                   return lhs.first < rhs.first;
               });
-    // Access and print the values in the vector
-    for (const auto &pair : skier_stats)
-    {
-        Print("Start: ");
-        Print(pair.first);
-        Print(" Ratio: ");
-        Print(pair.second);
-        Print("%\n");
-    }
-    /// output for the user
+
     double sum = 0.0;
     for (const auto& pair : skier_stats) {
         sum += pair.second;
     }
-
     double average = skier_stats.empty() ? 0.0 : sum / skier_stats.size();
-    SetOutput("marta_1_improved_night_max.out");
+
+    /// output for the user
+
+    SetOutput("poma_optimized.out");
 
     Print("Simulation done.\n");
     Print("Total number of visitors.");
@@ -488,24 +501,37 @@ int main(int argc, char *argv[])
     Print(unfinished_rides);
     Print("\n");
     if(marta_1_imporved){
-        Print("Marta 1 improved");
+        Print("Marta 1 improved \n");
         marta1_improved.Output();
     }else{
-        Print("Marta 1");
+        Print("Marta 1 \n");
         marta1.Output();
     }
-
-    Print("Marta 2");
+    Print("Marta 2 \n");
     marta2.Output();
-    Print("kotva");
+    Print("Kotva \n");
     kotva.Output();
     if(poma_improved){
-        Print("poma improved");
+        Print("Poma improved\n");
         poma_improved_to_kotva.Output();
     }else{
-        Print("poma");
+        Print("Poma \n");
         poma.Output();
     }
+    if(poma_optimized){
+        Print("Start using poma:");
+        Print(start_using_poma);
+        Print("\n");
+        Print("End using poma:");
+        Print(end_using_poma);
+        Print("\n");
+       double res = end_using_poma - start_using_poma;
+        Print("Poma ration:");
+        Print(((res+way_up_poma+departure_poma)/day_time)*100);
+        Print("%\n");
+
+    }
+
 
 
 

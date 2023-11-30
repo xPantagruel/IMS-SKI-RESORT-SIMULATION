@@ -1,0 +1,113 @@
+Simulation done.
+Total number of visitors. 2311 
+Quality of skiing: 36.1414 %
+Unfinished rides: 494 
+Marta 1 
++----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 2  (0 used, 2 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 2647                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 2                               |
+|  Average used capacity = 0.7941                          |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  2312                                          |
+|  Outcoming  2312                                         |
+|  Current length = 0                                      |
+|  Maximal length = 68                                     |
+|  Average length = 9.40146                                |
+|  Minimal time = 0.334999                                 |
+|  Maximal time = 405.541                                  |
+|  Average time = 162.655                                  |
+|  Standard deviation = 108.788                            |
++----------------------------------------------------------+
+
+Marta 2 
++----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 4  (0 used, 4 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 14539                      |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 4                               |
+|  Average used capacity = 2.18085                         |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  11502                                         |
+|  Outcoming  11502                                        |
+|  Current length = 0                                      |
+|  Maximal length = 165                                    |
+|  Average length = 19.5019                                |
+|  Minimal time = 0.000574784                              |
+|  Maximal time = 246.907                                  |
+|  Average time = 67.821                                   |
+|  Standard deviation = 65.4338                            |
++----------------------------------------------------------+
+
+Kotva 
++----------------------------------------------------------+
+| STORE                                                    |
++----------------------------------------------------------+
+|  Capacity = 2  (0 used, 2 free)                          |
+|  Time interval = 0 - 40000                               |
+|  Number of Enter operations = 2470                       |
+|  Minimal used capacity = 0                               |
+|  Maximal used capacity = 2                               |
+|  Average used capacity = 0.741                           |
++----------------------------------------------------------+
+  Input queue '.Q'
++----------------------------------------------------------+
+| QUEUE Q                                                  |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  2131                                          |
+|  Outcoming  2131                                         |
+|  Current length = 0                                      |
+|  Maximal length = 68                                     |
+|  Average length = 8.84008                                |
+|  Minimal time = 0.678043                                 |
+|  Maximal time = 405.846                                  |
+|  Average time = 165.933                                  |
+|  Standard deviation = 104.344                            |
++----------------------------------------------------------+
+
+Poma 
++----------------------------------------------------------+
+| FACILITY                                                 |
++----------------------------------------------------------+
+|  Status = not BUSY                                       |
+|  Time interval = 0 - 40000                               |
+|  Number of requests = 649                                |
+|  Average utilization = 0.1947                            |
++----------------------------------------------------------+
+  Input queue '.Q1'
++----------------------------------------------------------+
+| QUEUE Q1                                                 |
++----------------------------------------------------------+
+|  Time interval = 0 - 40000                               |
+|  Incoming  246                                           |
+|  Outcoming  246                                          |
+|  Current length = 0                                      |
+|  Maximal length = 9                                      |
+|  Average length = 0.114478                               |
+|  Minimal time = 0.0984785                                |
+|  Maximal time = 107.671                                  |
+|  Average time = 18.6143                                  |
+|  Standard deviation = 20.8938                            |
++----------------------------------------------------------+
+
+Start using poma: 8367.23 
+End using poma: 13108.6 
+Poma ration: 18.3828 %

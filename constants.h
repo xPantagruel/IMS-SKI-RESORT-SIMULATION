@@ -36,15 +36,23 @@ extern const int slunecna = 36;
 ///EXPERIMENTY
 extern bool marta_1_imporved = false;
 extern bool poma_improved = false;
-extern bool kotva_closing = false;
-extern bool poma_closing = false;
 
+extern double speed_up = 0;
 
 extern const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
 
-extern const double day_time = 27000;
+extern double day_time = 0;
+extern double night_time = 0;
 
 int unfinished_rides =0;
+
+extern bool poma_optimized = false;
+extern double poma_time = 0;
+
+extern bool first = true;
+extern double start_using_poma = 0;
+extern double end_using_poma = 0;
+
 
 bool open = false;
 
