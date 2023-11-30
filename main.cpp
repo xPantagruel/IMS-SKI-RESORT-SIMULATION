@@ -8,13 +8,13 @@
 
 #include "constants.h"
 /**
- * @struct Contains information about each Skier that leaves the system 
+ * @struct Contains information about each Skier that leaves the system
  */
 std::vector<std::pair<double, double>> skier_stats;
 
 /**
- * @class Represents working hours of ski centre 
- * Depends on open_time 
+ * @class Represents working hours of ski centre
+ * Depends on open_time
  */
 class Open_hours : public Process
 {
@@ -35,19 +35,19 @@ public:
 };
 
 /**
- * @class Defines one visitor of the ski centre 
- * Defines his behavior and attributes necessary for the simulation 
+ * @class Defines one visitor of the ski centre
+ * Defines his behavior and attributes necessary for the simulation
  */
 class Skier : public Process
 {
-    int rides = 10;                  /// number of rides until the skier leaves system
-    lift current_lift;               /// which next lift will take the skier
-    lift first_lift;                 /// initial lift when entering the system
-    double time_spent_skiing = 0;    /// time spend on the slopes
-    double time_spent_other = 0;     /// time spent waiting, transporting or having pause
-    double start_time;               /// start at which the skier entered the system
-    double pause;                    /// how long will the skier take pause
-    int pause_cnt;                   /// how many pauses have already taken
+    int rides = 10;               /// number of rides until the skier leaves system
+    lift current_lift;            /// which next lift will take the skier
+    lift first_lift;              /// initial lift when entering the system
+    double time_spent_skiing = 0; /// time spend on the slopes
+    double time_spent_other = 0;  /// time spent waiting, transporting or having pause
+    double start_time;            /// start at which the skier entered the system
+    double pause;                 /// how long will the skier take pause
+    int pause_cnt;                /// how many pauses have already taken
 
     /**
      * @brief Method defines the first lift that will the skier take
@@ -62,10 +62,11 @@ class Skier : public Process
         else if (val < 0.5)
         {
             current_lift = MARTA2;
+        }
+        else if (val < 0.75)
+        {
 
-        }else if (val < 0.75){
-
-             current_lift = POMA;
+            current_lift = POMA;
         }
         else
         {
@@ -77,13 +78,14 @@ class Skier : public Process
     /**
      * @brief Checks for time to take pause
      */
-    void check_pause(){
+    void check_pause()
+    {
 
-        if(Time > this->start_time + pause*pause_cnt){
+        if (Time > this->start_time + pause * pause_cnt)
+        {
             Wait(Exponential(pause_duration));
             pause_cnt++;
         }
-
     }
 
     /**
@@ -97,14 +99,16 @@ class Skier : public Process
 
             if (val < 0.5) /// ride down slope marta 1
             {
-               Wait(Normal(marta1_marta1, 10));
-               double val2 = Random();
-               if(val2 > 0.5){ ///choosing lift at the bottom of martha 1 and kotva
-                   current_lift = MARTA1;
-               }else{
-                   current_lift = KOTVA;
-               }
-
+                Wait(Normal(marta1_marta1, 10));
+                double val2 = Random();
+                if (val2 > 0.5)
+                { /// choosing lift at the bottom of martha 1 and kotva
+                    current_lift = MARTA1;
+                }
+                else
+                {
+                    current_lift = KOTVA;
+                }
             }
             else /// ride down slunecna slope
             {
@@ -114,35 +118,44 @@ class Skier : public Process
                 {
                     Wait(Normal(marta2_marta2, 10));
                     double val2 = Random();
-                    if(val2 < 0.9){  ///choosing lift at the bottom of marta 2 and poma
+                    if (val2 < 0.9)
+                    { /// choosing lift at the bottom of marta 2 and poma
                         current_lift = MARTA2;
-                    }else{
+                    }
+                    else
+                    {
                         current_lift = POMA;
                     }
-
                 }
-                else ///continues back to the bottom of martha 1
+                else /// continues back to the bottom of martha 1
                 {
                     Wait(Normal(marta2_marta1, 10));
                     double val2 = Random();
-                    if(val2 < 0.5){  ///choosing lift at the bottom of martha 1 and kotva
+                    if (val2 < 0.5)
+                    { /// choosing lift at the bottom of martha 1 and kotva
                         current_lift = MARTA1;
-                    }else{
+                    }
+                    else
+                    {
                         current_lift = KOTVA;
                     }
                 }
             }
         }
-        else if(current_lift == POMA){ /// skier just took the lift poma
+        else if (current_lift == POMA)
+        { /// skier just took the lift poma
 
             double val = Random();
             if (val < 0.7) /// takes the slope back to bottom of martha 2 and poma
             {
                 Wait(Normal(poma_marta2, 10));
                 double val2 = Random();
-                if(val2 < 0.9){
+                if (val2 < 0.9)
+                {
                     current_lift = MARTA2;
-                }else{
+                }
+                else
+                {
                     current_lift = POMA;
                 }
             }
@@ -150,33 +163,42 @@ class Skier : public Process
             {
                 Wait(Normal(poma_marta1, 10));
                 double val2 = Random();
-                if(val2 < 0.5){ ///choosing lift at the bottom of martha 1 and kotva
+                if (val2 < 0.5)
+                { /// choosing lift at the bottom of martha 1 and kotva
                     current_lift = MARTA1;
-                }else{
+                }
+                else
+                {
                     current_lift = KOTVA;
                 }
             }
         }
-        else  ///skier just took the lift martha 2
+        else /// skier just took the lift martha 2
         {
             double val = Random();
-            if (val < 0.7)  /// continues back on martha 2 slope
+            if (val < 0.7) /// continues back on martha 2 slope
             {
                 Wait(Normal(marta2_marta2, 10));
                 double val2 = Random();
-                if(val2 < 0.9){
+                if (val2 < 0.9)
+                {
                     current_lift = MARTA2;
-                }else{
+                }
+                else
+                {
                     current_lift = POMA;
                 }
             }
-            else  ///switches and continues to martha 1 and kotva
+            else /// switches and continues to martha 1 and kotva
             {
                 Wait(Normal(marta2_marta1, 10));
                 double val2 = Random();
-                if(val2 < 0.5){
+                if (val2 < 0.5)
+                {
                     current_lift = MARTA1;
-                }else{
+                }
+                else
+                {
                     current_lift = KOTVA;
                 }
             }
@@ -192,18 +214,20 @@ class Skier : public Process
 
         if (current_lift == MARTA1)
         {
-            if(marta_1_imporved){
+            if (marta_1_imporved)
+            {
                 Enter(marta1_improved, 1);
                 Wait(departure_marta2);
                 Leave(marta1_improved, 1);
                 Wait(way_up_marta1_improved);
-            }else{
-                Enter(marta1, 1); /// seize place at the platform
-                Wait(departure_marta1); ///wait for lift
-                Leave(marta1, 1); /// free the place (sit on the lift and go)
-                Wait(way_up_marta1); /// going with the lift up
             }
-
+            else
+            {
+                Enter(marta1, 1);       /// seize place at the platform
+                Wait(departure_marta1); /// wait for lift
+                Leave(marta1, 1);       /// free the place (sit on the lift and go)
+                Wait(way_up_marta1);    /// going with the lift up
+            }
         }
         else if (current_lift == MARTA2)
         {
@@ -212,21 +236,25 @@ class Skier : public Process
             Leave(marta2, 1);
             Wait(way_up_marta2);
         }
-        else if (current_lift == POMA){
-            if(poma_improved){
+        else if (current_lift == POMA)
+        {
+            if (poma_improved)
+            {
                 Enter(poma_improved_to_kotva, 1);
                 Wait(departure_kotva);
                 Leave(poma_improved_to_kotva, 1);
                 Wait(way_up_poma_improved);
-            }else{
+            }
+            else
+            {
                 Seize(poma);
                 Wait(departure_poma);
                 Release(poma);
                 Wait(way_up_poma);
             }
-
         }
-        else{ // KOTVA
+        else
+        { // KOTVA
             Enter(kotva, 1);
             Wait(departure_kotva);
             Leave(kotva, 1);
@@ -239,9 +267,9 @@ class Skier : public Process
     void Behavior() override
     {
         start_time = Time;
-        pause = Exponential(day_time/4); /// will take approx. 4 pauses per day time
+        pause = Exponential(day_time / 4); /// will take approx. 4 pauses per day time
         pause_cnt = 1;
-        choose_start(); /// spawn at the bottom of some lift
+        choose_start();           /// spawn at the bottom of some lift
         while (rides > 0 && open) /// while have rides and the ski areal is open
         {
             double tmp = Time;
@@ -252,17 +280,20 @@ class Skier : public Process
             time_spent_skiing += (Time - tmp); /// compute skiing
             rides--;
         }
-        ///compute the ration of skiing to other activities
+        /// compute the ration of skiing to other activities
         double skiing_ratio;
-        if(rides == 0){
-             skiing_ratio = time_spent_skiing/(time_spent_skiing+time_spent_other)*100;
-        }else{
-             skiing_ratio =0;
+        if (rides == 0)
+        {
+            skiing_ratio = time_spent_skiing / (time_spent_skiing + time_spent_other) * 100;
+        }
+        else
+        {
+            skiing_ratio = 0;
         }
 
-        skier_stats.emplace_back(start_time, skiing_ratio); ///save the stats
+        skier_stats.emplace_back(start_time, skiing_ratio); /// save the stats
 
-        Terminate(); ///skier leaves the system
+        Terminate(); /// skier leaves the system
     }
 };
 
@@ -279,11 +310,11 @@ class GeneratorDay : public Event
         {
             Cancel();
             Print("Closed");
-            //Print(skier_cnt);
+            // Print(skier_cnt);
         }
         else
         {
-            //Print(skier_cnt);
+            // Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
 
@@ -328,11 +359,11 @@ class GeneratorNight : public Event
         {
             Cancel();
             Print("Closed");
-            //Print(skier_cnt);
+            // Print(skier_cnt);
         }
         else
         {
-            //Print(skier_cnt);
+            // Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
 
@@ -379,7 +410,6 @@ bool parse_args(int argc, char *argv[])
     return true;
 }
 
-
 int main(int argc, char *argv[])
 {
 
@@ -412,11 +442,13 @@ int main(int argc, char *argv[])
 
     /// print statistics about the skiers
     std::sort(skier_stats.begin(), skier_stats.end(),
-              [](const std::pair<double, double>& lhs, const std::pair<double, double>& rhs) {
+              [](const std::pair<double, double> &lhs, const std::pair<double, double> &rhs)
+              {
                   return lhs.first < rhs.first;
               });
     // Access and print the values in the vector
-    for (const auto& pair : skier_stats) {
+    for (const auto &pair : skier_stats)
+    {
         Print("Start: ");
         Print(pair.first);
         Print(" Ratio: ");
@@ -429,10 +461,13 @@ int main(int argc, char *argv[])
     Print("Total number of visitors.");
     Print(skier_cnt);
     Print("\n");
-    if(marta_1_imporved){
+    if (marta_1_imporved)
+    {
         Print("Marta 1 improved");
         marta1_improved.Output();
-    }else{
+    }
+    else
+    {
         Print("Marta 1 improved");
         marta1.Output();
     }
@@ -441,15 +476,16 @@ int main(int argc, char *argv[])
     marta2.Output();
     Print("kotva");
     kotva.Output();
-    if(poma_improved){
+    if (poma_improved)
+    {
         Print("poma improved");
         poma_improved_to_kotva.Output();
-    }else{
+    }
+    else
+    {
         Print("poma");
         poma.Output();
     }
-
-
 
     return 0;
 }
