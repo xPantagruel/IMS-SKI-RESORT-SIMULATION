@@ -192,10 +192,18 @@ class Skier : public Process
 
         if (current_lift == MARTA1)
         {
-            Enter(marta1, 1); /// seize place at the platform
-            Wait(departure_marta1); ///wait for lift
-            Leave(marta1, 1); /// free the place (sit on the lift and go)
-            Wait(way_up_marta1); /// going with the lift up
+            if(marta_1_imporved){
+                Enter(marta1_improved, 1);
+                Wait(departure_marta2);
+                Leave(marta1_improved, 1);
+                Wait(way_up_marta1_improved);
+            }else{
+                Enter(marta1, 1); /// seize place at the platform
+                Wait(departure_marta1); ///wait for lift
+                Leave(marta1, 1); /// free the place (sit on the lift and go)
+                Wait(way_up_marta1); /// going with the lift up
+            }
+
         }
         else if (current_lift == MARTA2)
         {
@@ -205,10 +213,18 @@ class Skier : public Process
             Wait(way_up_marta2);
         }
         else if (current_lift == POMA){
-            Seize(poma);
-            Wait(departure_poma);
-            Release(poma);
-            Wait(way_up_poma);
+            if(poma_improved){
+                Enter(poma_improved_to_kotva, 1);
+                Wait(departure_kotva);
+                Leave(poma_improved_to_kotva, 1);
+                Wait(way_up_poma_improved);
+            }else{
+                Seize(poma);
+                Wait(departure_poma);
+                Release(poma);
+                Wait(way_up_poma);
+            }
+
         }
         else{ // KOTVA
             Enter(kotva, 1);
@@ -366,6 +382,12 @@ bool parse_args(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
+
+    marta_1_imporved = true;
+    poma_improved = true;
+    kotva_closing = false;
+    poma_closing = false;
+
     bool day = parse_args(argc, argv); // by default day if no args
 
     Print("Project IMS 2023");
@@ -407,14 +429,27 @@ int main(int argc, char *argv[])
     Print("Total number of visitors.");
     Print(skier_cnt);
     Print("\n");
-    Print("Marta 1");
-    marta1.Output();
+    if(marta_1_imporved){
+        Print("Marta 1 improved");
+        marta1_improved.Output();
+    }else{
+        Print("Marta 1 improved");
+        marta1.Output();
+    }
+
     Print("Marta 2");
     marta2.Output();
     Print("kotva");
     kotva.Output();
-    Print("poma");
-    poma.Output();
+    if(poma_improved){
+        Print("poma improved");
+        poma_improved_to_kotva.Output();
+    }else{
+        Print("poma");
+        poma.Output();
+    }
+
+
 
     return 0;
 }
