@@ -59,9 +59,9 @@ extern bool first;
 extern double start_using_poma;
 extern double end_using_poma;
 
-int unfinished_rides = 0;
+extern bool open;
+extern int unfinished_rides;
 extern const int pause_duration = 300; // kolik si da cca pauzu, 5 min
-bool open = false;
 
 int skier_cnt = 0;
 

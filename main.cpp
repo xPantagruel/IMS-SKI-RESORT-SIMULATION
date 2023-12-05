@@ -17,6 +17,8 @@ double night_time = 0;         // 18:00 - 21:00
 double start_using_poma = 0;   // time when first skier used poma in poma_optimized
 double end_using_poma = 0;     // time when last skier used poma in poma_optimized
 bool first = true;             // true = first skier used poma in poma_optimized
+bool open = false;             // true = ski centre is open
+int unfinished_rides = 0;      // number of unfinished rides
 
 /**
  * @struct Contains information about each Skier that leaves the system
