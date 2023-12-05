@@ -1,6 +1,10 @@
-//
-// Created by daniel on 28.11.23.
-//
+/**
+ * VUT FIT IMS project - ski centre simulation
+ *
+ * @file constants.h
+ * @author Matěj Macek <xmacek27@stud.fit.vutbr.cz>
+ * @author Daniel Žárský <xzarsk04@stud.fit.vutbr.cz>
+ */
 
 #ifndef IMS_PROJECT_CONSTANTS_H
 #define IMS_PROJECT_CONSTANTS_H
@@ -39,12 +43,11 @@ extern bool poma_improved = false;
 
 extern double speed_up = 0;
 
-extern const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
+
 
 extern double day_time = 0;
 extern double night_time = 0;
 
-int unfinished_rides =0;
 
 extern bool poma_optimized = false;
 extern double poma_time = 0;
@@ -53,7 +56,8 @@ extern bool first = true;
 extern double start_using_poma = 0;
 extern double end_using_poma = 0;
 
-
+int unfinished_rides =0;
+extern const int pause_duration  = 300; // kolik si da cca pauzu, 5 min
 bool open = false;
 
 enum lift

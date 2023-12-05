@@ -7,6 +7,7 @@
  */
 
 #include "constants.h"
+
 /**
  * @struct Contains information about each Skier that leaves the system
  */
@@ -250,7 +251,7 @@ class Skier : public Process
                 choose_bottom_marta2(); /// continues back on martha 2 slope
             }
         }
-        check_pause();
+
     }
 
     /**
@@ -325,6 +326,7 @@ class Skier : public Process
             time_spent_other += (Time - tmp); /// compute other activities
             tmp = Time;
             ride_down();
+            check_pause();
             time_spent_skiing += (Time - tmp); /// compute skiing
             rides--;
         }
