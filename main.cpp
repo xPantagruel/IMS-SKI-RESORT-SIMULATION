@@ -8,6 +8,16 @@
 
 #include "constants.h"
 
+bool marta_1_improved = false; // true = marta 1 improved
+bool poma_improved = false;    // true = poma improved
+bool poma_optimized = false;   // true = poma optimized
+double speed_up = 0;           // speed up the generation of skiers
+double day_time = 0;           // 8:30 - 15:00
+double night_time = 0;         // 18:00 - 21:00
+double start_using_poma = 0;   // time when first skier used poma in poma_optimized
+double end_using_poma = 0;     // time when last skier used poma in poma_optimized
+bool first = true;             // true = first skier used poma in poma_optimized
+
 /**
  * @struct Contains information about each Skier that leaves the system
  */
@@ -251,7 +261,6 @@ class Skier : public Process
                 choose_bottom_marta2(); /// continues back on martha 2 slope
             }
         }
-
     }
 
     /**
@@ -414,11 +423,9 @@ class GeneratorNight : public Event
         if (!open)
         {
             Cancel();
-            // Print(skier_cnt);
         }
         else
         {
-            // Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
 
@@ -549,12 +556,10 @@ int main(int argc, char *argv[])
         (new Open_hours(night_time))->Activate();
         (new GeneratorNight)->Activate();
     }
-    // (new Open_hours(day_time))->Activate();
-    // (new Generator)->Activate();
 
     Run();
 
-    /// print statistics about the skiers
+    // print statistics about the skiers
     std::sort(skier_stats.begin(), skier_stats.end(),
               [](const std::pair<double, double> &lhs, const std::pair<double, double> &rhs)
               {
