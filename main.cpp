@@ -358,7 +358,6 @@ class GeneratorDay : public Event
         if (!open)
         {
             Cancel();
-            Print("Closed");
             // Print(skier_cnt);
         }
         else
@@ -555,12 +554,9 @@ int main(int argc, char *argv[])
     }
     double average = skier_stats.empty() ? 0.0 : sum / skier_stats.size();
 
-    /// output for the user
 
-    SetOutput("poma_optimized.out");
 
-    Print("Simulation done.\n");
-    Print("Total number of visitors.");
+    Print("\nTotal number of visitors.");
     Print(skier_cnt);
     Print("\n");
     Print("Quality of skiing:");
