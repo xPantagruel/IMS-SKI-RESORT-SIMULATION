@@ -453,10 +453,10 @@ void print_help()
 }
 
 /**
- * @brief Parses command line arguments
+ * @brief Parses command line arguments and set global variables accordingly
  * @param argc Number of arguments
  * @param argv Array of arguments
- * @return True if arguments were parsed successfully, false otherwise
+ * @return True if day, false if night
  */
 bool parse_args(int argc, char *argv[])
 {
