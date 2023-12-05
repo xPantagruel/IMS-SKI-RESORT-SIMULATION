@@ -407,7 +407,6 @@ class GeneratorNight : public Event
         if (!open)
         {
             Cancel();
-            Print("Closed");
             // Print(skier_cnt);
         }
         else
@@ -520,7 +519,7 @@ int main(int argc, char *argv[])
 {
     bool day = parse_args(argc, argv); // by default day if no args
 
-    Print("Project IMS 2023");
+    Print("\nProject IMS 2023\n");
     Init(0, 40000);
     day_time = 27000;
     night_time = 10800;
