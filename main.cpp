@@ -1,9 +1,9 @@
 /**
- * VUT FIT IMS project - Freshbox food distribution.
+ * VUT FIT IMS project - ski centre simulation
  *
- * @file Work shift process implementation.
- * @author Dominik Harmim <xharmi00@stud.fit.vutbr.cz>
- * @author Vojtech Hertl <xhertl04@stud.fit.vutbr.cz>
+ * @file main.cpp
+ * @author Matěj Macek <xmacek27@stud.fit.vutbr.cz>
+ * @author Daniel Žárský <xzarsk04@stud.fit.vutbr.cz>
  */
 
 #include "constants.h"
@@ -346,11 +346,18 @@ class Skier : public Process
     }
 };
 
+/**
+ * @brief Class representing a generator for simulating events on a day.
+ * Inherits from Event class.
+ */
 class GeneratorDay : public Event
 {
 
-    double current_time = 0.0;
+    double current_time = 0.0; /**< Current simulation time. */
 
+    /**
+     * @brief Behavior function override from Event class.
+     */
     void Behavior() override
     {
         current_time = Time;
@@ -358,11 +365,9 @@ class GeneratorDay : public Event
         if (!open)
         {
             Cancel();
-            // Print(skier_cnt);
         }
         else
         {
-            // Print(skier_cnt);
             (new Skier)->Activate();
             skier_cnt++;
             double seed = -speed_up;
@@ -433,6 +438,9 @@ class GeneratorNight : public Event
     }
 };
 
+/**
+ * @brief Prints help message
+ */
 void print_help()
 {
     printf("Usage: ./ims [day|night] [-m marta1Imp] [-p pomaImp|pomaOpti] [-s <speed_value>] [-h]\n");
@@ -444,67 +452,71 @@ void print_help()
     printf("  -h                 : Display help message\n");
 }
 
+/**
+ * @brief Parses command line arguments
+ * @param argc Number of arguments
+ * @param argv Array of arguments
+ * @return True if arguments were parsed successfully, false otherwise
+ */
 bool parse_args(int argc, char *argv[])
 {
-    if (argc > 1)
+    bool returnValue = true; // Default return value
+
+    for (int i = 1; i < argc; ++i)
     {
-        if (strcmp(argv[1], "-h") == 0)
+        if (strcmp(argv[i], "-h") == 0)
         {
             // Display help message and exit
             print_help();
             exit(0);
         }
-        else if (strcmp(argv[1], "day") == 0)
+        else if (strcmp(argv[i], "day") == 0)
         {
-            // Your existing behavior for "day"
-            return true;
+            returnValue = true;
         }
-        else if (strcmp(argv[1], "night") == 0)
+        else if (strcmp(argv[i], "night") == 0)
         {
-            // Your existing behavior for "night"
-            return false;
+            returnValue = false;
         }
-        else if (strcmp(argv[1], "-m") == 0 && argc > 2)
+        else if (strcmp(argv[i], "-m") == 0 && i + 1 < argc)
         {
             // Handling for '-m' argument
-            if (strcmp(argv[2], "marta1Imp") == 0)
+            if (strcmp(argv[i + 1], "marta1Imp") == 0)
             {
                 marta_1_improved = true;
-                // Additional logic specific to marta1Imp mode
-                return true;
             }
             else
             {
                 print_help();
                 exit(0);
             }
+            ++i; // Skip the next argument as it's processed here
         }
-        else if (strcmp(argv[1], "-p") == 0 && argc > 2)
+        else if (strcmp(argv[i], "-p") == 0 && i + 1 < argc)
         {
             // Handling for '-p' argument
-            if (strcmp(argv[2], "pomaImp") == 0)
+            if (strcmp(argv[i + 1], "pomaImp") == 0)
             {
                 poma_improved = true;
                 // Additional logic specific to pomaImp mode
-                return true;
             }
-            else if (strcmp(argv[2], "pomaOpti") == 0)
+            else if (strcmp(argv[i + 1], "pomaOpti") == 0)
             {
                 poma_optimized = true;
                 // Additional logic specific to pomaOpti mode
-                return true;
             }
             else
             {
                 print_help();
                 exit(0);
             }
+            ++i; // Skip the next argument as it's processed here
         }
-        else if (strcmp(argv[1], "-s") == 0 && argc > 2)
+        else if (strcmp(argv[i], "-s") == 0 && i + 1 < argc)
         {
             // Handling for '-s' argument for speed value
-            speed_up = atof(argv[2]);
-            return true;
+            speed_up = atof(argv[i + 1]);
+            ++i; // Skip the next argument as it's processed here
         }
         else
         {
@@ -512,7 +524,8 @@ bool parse_args(int argc, char *argv[])
             exit(0);
         }
     }
-    return true;
+
+    return returnValue; // Return the value after processing all arguments
 }
 
 int main(int argc, char *argv[])
@@ -552,8 +565,6 @@ int main(int argc, char *argv[])
         sum += pair.second;
     }
     double average = skier_stats.empty() ? 0.0 : sum / skier_stats.size();
-
-
 
     Print("\nTotal number of visitors.");
     Print(skier_cnt);
